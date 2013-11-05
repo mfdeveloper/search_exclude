@@ -6,9 +6,9 @@ It's a Drupal 7 module that extend the search core module with form components t
 Screenshots
 -----------
 
-![Module Search Default](https://github.com/mfdeveloper/search_exclude/images/search_exclude_default_module.png)
+![Module Search Default](https://github.com/mfdeveloper/search_exclude/tree/master/images/search_exclude_default_module.png)
 
-![Content Types to exclude](https://github.com/mfdeveloper/search_exclude/images/search_exclude_content_types.png)
+![Content Types to exclude](https://github.com/mfdeveloper/search_exclude/tree/master/images/search_exclude_content_types.png)
 
 Usage
 -----
