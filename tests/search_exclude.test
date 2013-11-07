@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * SearchExcludeTest with unit tests
+ * for exclude content types for indexing
+ * and update status message on
+ * admin/config/search/setttings page
+ *
+ */
+class SearchExcludeTest extends DrupalFixtureTestCase {
+    
+    public $public_files_directory = 'sites/all/default/files';
+
+    public static function getInfo() {
+        
+        return array(
+            'name'=>'Search Exclude Content Types Test',
+            'description'=>'Tests for content types excludes from search index',
+            'group'=>'Search Exclude'
+        );
+    }
+    
+    public function testStatusExcludeContentTypes() {
+        $nodeResult = module_invoke('node','search_status');
+        
+        $result = module_invoke('search_exclude', 'search_status','article'); //search_exclude_search_status('article');
+        
+        $this->assertTrue($nodeResult['total'] > $result['total'], 
+                          t('The default Node Status is greater than Search Exclude')
+                         );
+        
+    }
+    
+    /**
+     * @todo Checks because hook_update_index don't trigger by unit tests 
+     */
+    public function testUpdateIndexExclude() {
+        $resultBefore = module_invoke('search_exclude', 'search_status','page');
+        
+        module_invoke('search_exclude','update_index','page');
+        
+        $resultAfter = module_invoke('search_exclude', 'search_status','page');
+
+        $placeHolders = array(
+            '@origin'=>$resultBefore['remaining'],
+            '@after'=>$resultAfter['remaining']
+        );
+        
+        $this->assertTrue($resultBefore['remaining'] != $resultAfter['remaining'], t('Content types indexed. Original:@origin After Indexing:@after',$placeHolders));
+        
+    }
+}
+
+?>
