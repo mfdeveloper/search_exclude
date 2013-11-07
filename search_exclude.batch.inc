@@ -1,5 +1,7 @@
 <?php
 
+use DrupalModule\Search;
+
 /**
  * Run indexing in batch process
  * 
@@ -14,8 +16,13 @@ function _search_exclude_index_batch($module,&$context){
     //Fix the "Request Time out" problem in batch process
     set_time_limit(0);
     
-    module_invoke($module, 'update_index');
-    $status = module_invoke('search_exclude','search_status',variable_get('search_exclude_content_types'));
+    $search = new SearchExclude();
+    $search->updateIndex();
+    
+    //module_invoke($module, 'update_index');
+    //$status = module_invoke('search_exclude','search_status',variable_get('search_exclude_content_types'));
+    $statusObj = new SearchExclude\Status();
+    $status = $statusObj->getData();
     
     $completed = $status['total'] - $status['remaining'];
     $context['finished'] = empty($status['total']) ? 1 : $completed / $status['total'];

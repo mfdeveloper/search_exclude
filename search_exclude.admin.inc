@@ -1,4 +1,7 @@
 <?php
+
+use DrupalModule\Search\SearchExclude as SearchExclude;
+
 /**
  * Form submission handler for search_admin_settings().
  * 
@@ -26,22 +29,11 @@ function search_exclude_submit($form,$form_state){
  * @return string Status message with new 'percentage' and 'remaining' index without
  *                content types defined in 'exclude_types' multiselect field
  */
-function _search_exclude_ajax_update_status($form,$form_state){
+function search_exclude_ajax_update_status($form,$form_state){
+   
+    $status = new SearchExclude\Status();
     
-    $remaining = 0;
-    $total = 0;
-    
-    $searchExcludes = implode(',',$form_state['values']['exclude_types']);
-    $status = module_invoke('search_exclude','search_status',$searchExcludes);
-    
-    if($status){
-        $remaining += $status['remaining'];
-        $total += $status['total'];
-    }
-    
-    $count = format_plural($remaining, 'There is 1 item left to index.', 'There are @count items left to index.');
-    $percentage = ((int)min(100, 100 * ($total - $remaining) / max(1, $total))) . '%';
-    $status = '<p><strong>' . t('%percentage of the site has been indexed.', array('%percentage' => $percentage)) . ' ' . $count . '</strong></p>';
+    $status = $status->getMessage($form_state['values']['exclude_types']);
     
     $form['status']['status']['#markup'] = $status;
     
