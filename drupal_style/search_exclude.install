@@ -1,9 +1,0 @@
-<?php
-
-/**
-* Implements hook_uninstall();
-*/
-function search_exclude_uninstall() {
-    
-    variable_del('search_exclude_content_types');
-}
