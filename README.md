@@ -34,6 +34,6 @@ Usage
 Next implementations
 --------------------
 
-- [X] Add the **namespace_style** folder with Object Orientation implementation of module compatible with PHP 5.3+ (Updated on 07/11/2013)
+- [X] Add the **namespace_style** branch with Object Orientation implementation of module compatible with PHP 5.3+ (Updated on 07/11/2013)
 - [ ] More .test files with unit tests using SimpleTest API
 - [ ] **Silex** framework integration
