@@ -13,6 +13,12 @@ Screenshots
 ####Remove content types for indexing
 ![Content Types to exclude](https://github.com/mfdeveloper/search_exclude/raw/master/images/search_exclude_content_types.png)
 
+Requirements
+-----
+
+1.  Drupal Search core module
+2.  PHP 5.3+ (because this banch use namespaces and closure)
+
 Usage
 -----
 
