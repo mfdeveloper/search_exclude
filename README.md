@@ -13,6 +13,11 @@ Screenshots
 ####Remove content types for indexing
 ![Content Types to exclude](https://github.com/mfdeveloper/search_exclude/raw/master/images/search_exclude_content_types.png)
 
+Requirements
+-----
+
+- Drupal Search core module
+
 Usage
 -----
 
