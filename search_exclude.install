@@ -7,3 +7,34 @@ function search_exclude_uninstall() {
     
     variable_del('search_exclude_content_types');
 }
+
+/**
+ * Implements hook_requirements();
+ * 
+ * Check the PHP 5.3+ version to use
+ * the namespace and closure features
+ */
+function search_exclude_requirements($phase) {
+    
+    if($phase == 'install'){
+        
+        $t = get_t();
+        $requirements['php_version'] = array(
+            'title'=>$t('PHP 5.3+')
+        );
+
+        if(version_compare(PHP_VERSION, '5.3') >= 0){
+            $requirements['php_version']['value'] = $t('PHP 5.3+ installed');
+            $requirements['php_version']['severity'] = REQUIREMENT_OK;
+            
+        }else{
+            $moduleName = basename(__FILE__, '.install');
+            
+            $requirements['php_version']['value'] = $t('version wrong detected in <b>@module</b> module',array('@module'=>$moduleName));
+            $requirements['php_version']['description'] = $t('Please, install the PHP 5.3+ version');
+            $requirements['php_version']['severity'] = REQUIREMENT_ERROR;
+        }
+        
+        return $requirements;
+    }
+}
