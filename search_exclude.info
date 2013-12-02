@@ -1,4 +1,4 @@
-name = Search Exclude Node Type
+name = Search Exclude Node Types
 description = Exclude content types of search indexing action.
 package = Search
 project = search_exclude
