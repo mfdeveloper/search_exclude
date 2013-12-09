@@ -1,7 +1,11 @@
 <?php
 
 /**
- * Import Drupal module namespaces 
+ * @file
+ * Main drupal hooks implementations
+ * In most of cases on this version, 
+ * the hooks is only a trigger for 
+ * class methods of 'library' folder 
  */
 use DrupalModule\Search\SearchExclude as SearchExclude;
 
@@ -15,24 +19,37 @@ use DrupalModule\Search\SearchExclude as SearchExclude;
  */
 function search_exclude_boot() {
     
-    spl_autoload_register(function($class){
+    spl_autoload_register(function($class) {
         
-        if(strpos($class,'DrupalModule') !== false){
+        if (strpos($class, 'DrupalModule') !== FALSE) {
             
             if (version_compare(PHP_VERSION, '5.3') >= 0) {
 
                 //Create a finder with namespace support.
                                
-                $class = str_replace('\\','/',$class);
+                $class = str_replace('\\', '/', $class);  
+            } 
+            else {
                 
-            }else {
                 // Create a finder without namespaces support.
                 $class = str_replace('_', '/', $class);
-            }
-            require_once 'library/'.$class.'.php';
+            } 
+            require_once 'library/' . $class . '.php';
         }
     });
 }
+
+/**
+ * Implements hook_help();
+ */
+function search_exclude_help($path, $arg) {
+    
+    switch ($path) {
+      case 'admin/help#search_exclude':
+        return file_get_contents(dirname(__FILE__) . "/README.txt");
+  }
+}
+
 
 /**
  * Implements hook_search_info().
@@ -44,7 +61,7 @@ function search_exclude_boot() {
  */
 function search_exclude_search_info() {
     
-  return module_invoke('node','search_info');
+  return module_invoke('node', 'search_info');
 }
 
 /**
@@ -83,7 +100,7 @@ function search_exclude_search_admin() {
  */
 function search_exclude_search_execute($keys = NULL, $conditions = NULL) {
   
-    return module_invoke('node', 'search_execute',$keys,$conditions);
+    return module_invoke('node', 'search_execute', $keys, $conditions);
 }
 
 /**
@@ -134,6 +151,7 @@ function search_exclude_update_index() {
  * @see SearchExclude\Status::changeTotal()
  */
 function search_exclude_query_node_search_status_total_alter(QueryAlterableInterface $query) {
+    
     $status = new SearchExclude\Status();
     $status->changeTotal($query);
 }
@@ -165,10 +183,9 @@ function search_exclude_query_node_search_status_remaining_alter(QueryAlterableI
  * @see SearchExclude\Form\AdminSettings
  */
 function search_exclude_form_search_admin_settings_alter(&$form, &$form_state, $form_id) {
-    
+
    $search = new SearchExclude();
-   $data = $search->form($form,$form_state)->change();
+   $data = $search->form($form, $form_state)->change();
    
    extract($data);
-                  
 }

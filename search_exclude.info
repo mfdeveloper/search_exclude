@@ -1,7 +1,6 @@
 name = Search Exclude Node Types
 description = Exclude content types of search indexing action. Implemented with Object Orientation and Namespaces style
 package = Search
-project = search_exclude
 dependencies[] = search
 dependencies[] = node
 
@@ -13,7 +12,3 @@ files[] = library/DrupalModule/Search/SearchExclude.php
 files[] = library/DrupalModule/Search/SearchExclude/DbQueryStatusTag.php
 files[] = library/DrupalModule/Search/SearchExclude/Status.php
 files[] = library/DrupalModule/Search/SearchExclude/Form/AdminSettings.php
-
-; Information added by drupal.org packaging script
-version = "7.x-1.0-dev"
-core = "7.x"

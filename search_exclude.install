@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * @file
+ * Install hooks requirements and
+ * remove variables when uninstall
+ */
+
+/**
 * Implements hook_uninstall();
 */
 function search_exclude_uninstall() {
@@ -15,22 +21,24 @@ function search_exclude_uninstall() {
  * the namespace and closure features
  */
 function search_exclude_requirements($phase) {
+    $requirements = array();
     
-    if($phase == 'install'){
+    if ($phase == 'install') {
         
         $t = get_t();
         $requirements['php_version'] = array(
-            'title'=>$t('PHP 5.3+')
+            'title' => $t('PHP 5.3+')
         );
 
-        if(version_compare(PHP_VERSION, '5.3') >= 0){
+        if (version_compare(PHP_VERSION, '5.3') >= 0) {
             $requirements['php_version']['value'] = $t('PHP 5.3+ installed');
             $requirements['php_version']['severity'] = REQUIREMENT_OK;
             
-        }else{
-            $moduleName = basename(__FILE__, '.install');
+        }
+        else{
+            $module = basename(__FILE__, '.install');
             
-            $requirements['php_version']['value'] = $t('version wrong detected in <b>@module</b> module',array('@module'=>$moduleName));
+            $requirements['php_version']['value'] = $t('version wrong detected in <b>@module</b> module', array('@module' => $module));
             $requirements['php_version']['description'] = $t('Please, install the PHP 5.3+ version');
             $requirements['php_version']['severity'] = REQUIREMENT_ERROR;
         }

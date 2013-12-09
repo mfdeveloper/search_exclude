@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @file
+ * SimpleTest class with unit tests 
+ */
 
 /**
  * Import Search Exclude namespaces 
@@ -16,9 +19,9 @@ class SearchExcludeTest extends DrupalFixtureTestCase {
     public static function getInfo() {
         
         return array(
-            'name'=>'Search Exclude Content Types Test',
-            'description'=>'Tests for content types excludes from search index',
-            'group'=>'Search Exclude'
+            'name' => 'Search Exclude Content Types Test',
+            'description' => 'Tests for content types excludes from search index',
+            'group' => 'Search Exclude'
         );
     }
     
@@ -35,9 +38,9 @@ class SearchExcludeTest extends DrupalFixtureTestCase {
         $status = new SearchExclude\Status();
         $result = $status->getData('page');
          
-        $nodeResult = module_invoke('node','search_status');
+        $nodeRs = module_invoke('node', 'search_status');
 
-        $this->assertTrue($nodeResult['total'] > $result['total'], 
+        $this->assertTrue($nodeRs['total'] > $result['total'], 
                           t('The default Node Status is greater than Search Exclude')
                          );
         
@@ -51,19 +54,17 @@ class SearchExcludeTest extends DrupalFixtureTestCase {
         $search = new SearchExclude();
         
         $status = new SearchExclude\Status();
-        $resultBefore = $status->getData('page');
+        $resultbefore = $status->getData('page');
         
         $search->updateIndex();
         
-        $resultAfter = $status->getData('page');
+        $resultafter = $status->getData('page');
 
-        $placeHolders = array(
-            '@origin'=>$resultBefore['remaining'],
-            '@after'=>$resultAfter['remaining']
+        $placeholders = array(
+            '@origin' => $resultbefore['remaining'],
+            '@after' => $resultafter['remaining']
         );
         
-        $this->assertTrue($resultBefore['remaining'] != $resultAfter['remaining'], t('Content types indexed. Original:@origin After Indexing:@after',$placeHolders));
+        $this->assertTrue($resultbefore['remaining'] != $resultafter['remaining'], t('Content types indexed. Original:@origin After Indexing:@after', $placeholders));
     }
 }
-
-?>
