@@ -1,4 +1,9 @@
 <?php
+/**
+ * @file
+ * Drupal default hooks implementations,
+ * using the global functions style 
+ */
 
 /**
  * Implements hook_search_info().
@@ -10,7 +15,7 @@
  */
 function search_exclude_search_info() {
     
-  return module_invoke('node','search_info');
+  return module_invoke('node', 'search_info');
 }
 
 /**
@@ -44,42 +49,43 @@ function search_exclude_search_reset() {
 function search_exclude_search_status() {
 
     $excludes = variable_get('search_exclude_content_types');
-    if(empty($excludes)){
+    if (empty($excludes)) {
         
         $result = module_invoke('node', 'search_status');
     }
     
-    $total = db_select('{node}','n')->fields('n',array('nid'));
+    $total = db_select('{node}', 'n')->fields('n', array('nid'));
 
     
 
-    $orConditions = db_or();
-    $orConditions->condition('d.reindex','0','<>')
+    $orconditions = db_or();
+    $orconditions->condition('d.reindex', '0', '<>')
                 ->isNull('d.sid');
 
-    $remaining = db_select("{node}",'n')->fields('n',array('nid'));
+    $remaining = db_select("{node}", 'n')->fields('n', array('nid'));
     
 
-    $excludeTypes = func_get_args();
+    $exclude_types = func_get_args();
     
     /*
      * If content types for exclude is passed by arguments, 
      * add for query's condition 
      */
-    if(!empty($excludeTypes)){
+    if (!empty($exclude_types)) {
        
-        if(!empty($excludeTypes[0])){
+        if (!empty($exclude_types[0])) {
             
-            if(strpos($excludeTypes[0],',') !== false){
+            if (strpos($exclude_types[0], ',') !== FALSE) {
                 
-                $excludeTypes = explode(',', $excludeTypes[0]);
+                $exclude_types = explode(',', $exclude_types[0]);
                 
             }
             
-            $total->condition('n.type',  $excludeTypes,'NOT IN');
-            $remaining->condition('n.type',  $excludeTypes,'NOT IN');
+            $total->condition('n.type', $exclude_types, 'NOT IN');
+            $remaining->condition('n.type', $exclude_types, 'NOT IN');
         }
-    }else{
+    }
+    else {
         
         //Add tags only if content types for exclude not passed by arguments for this function
         $total->addTag('node_search_status_total');
@@ -91,8 +97,8 @@ function search_exclude_search_status() {
                    
    $total = $total->fetchObject()->expression;
   
-   $remaining->leftJoin('{search_dataset}','d',"d.type = 'node' AND d.sid = n.nid");
-   $remaining->condition($orConditions);
+   $remaining->leftJoin('{search_dataset}', 'd', "d.type = 'node' AND d.sid = n.nid");
+   $remaining->condition($orconditions);
   
    $result = $remaining->countQuery()->execute();
    $result = $result->fetchObject()->expression;
@@ -123,7 +129,7 @@ function search_exclude_search_admin() {
  */
 function search_exclude_search_execute($keys = NULL, $conditions = NULL) {
   
-    return module_invoke('node', 'search_execute',$keys,$conditions);
+    return module_invoke('node', 'search_execute', $keys, $conditions);
 }
 
 /**
@@ -140,17 +146,17 @@ function search_exclude_update_index() {
   
   $query = "SELECT n.nid,n.title,n.type FROM {node} n LEFT JOIN {search_dataset} d ON d.type = 'node' AND d.sid = n.nid WHERE (d.sid IS NULL OR d.reindex <> 0)";
   
-  $excludeTypes = variable_get('search_exclude_content_types','');
+  $exclude_types = variable_get('search_exclude_content_types', '');
   
   $args = func_get_args();
-  if(isset($args[0])){
-      $excludeTypes = $args[0];
+  if (isset($args[0])) {
+      $exclude_types = $args[0];
   }
   
-  if(!empty($excludeTypes)){
-      $excludeTypes = preg_replace('/,/',"','",$excludeTypes);
+  if (!empty($exclude_types)) {
+      $exclude_types = preg_replace('/,/', "','", $exclude_types);
       
-      $query .= " AND (n.type NOT IN('$excludeTypes'))";
+      $query .= " AND (n.type NOT IN('$exclude_types'))";
   }
   
   $query .= ' ORDER BY n.type ASC, n.nid ASC';
@@ -172,10 +178,10 @@ function search_exclude_update_index() {
  * @see search_exclude_search_status()
  */
 function search_exclude_query_node_search_status_total_alter(QueryAlterableInterface &$query) {
-    $excludeTypes = variable_get('search_exclude_content_types');
+    $exclude_types = variable_get('search_exclude_content_types');
     
-    if(!empty($excludeTypes)){
-        $query->condition('n.type',  explode(',', $excludeTypes),'NOT IN');
+    if (!empty($exclude_types)) {
+        $query->condition('n.type',  explode(',', $exclude_types), 'NOT IN');
     }
 }
 
@@ -189,10 +195,10 @@ function search_exclude_query_node_search_status_total_alter(QueryAlterableInter
  * @see search_exclude_search_status()
  */
 function search_exclude_query_node_search_status_remaining_alter(QueryAlterableInterface &$query) {
-    $excludeTypes = variable_get('search_exclude_content_types');
+    $exclude_types = variable_get('search_exclude_content_types');
     
-    if(!empty($excludeTypes)){
-        $query->condition('n.type',explode(',', $excludeTypes),'NOT IN');
+    if (!empty($exclude_types)) {
+        $query->condition('n.type', explode(',', $exclude_types), 'NOT IN');
     }
 }
 
@@ -210,9 +216,9 @@ function search_exclude_query_node_search_status_remaining_alter(QueryAlterableI
 function search_exclude_form_search_admin_settings_alter(&$form, &$form_state, $form_id) {
     
     //Include file with form callbacks(POST submit, Ajax callback...)
-    form_load_include($form_state, 'inc', 'search_exclude','search_exclude.admin');
+    form_load_include($form_state, 'inc', 'search_exclude', 'search_exclude.admin');
     
-    $activeModules = variable_get('search_active_modules',array('node','user'));
+    $active_modules = variable_get('search_active_modules', array('node', 'user'));
     
     /**
      * Add form elements only if the 'search_exclude' 
@@ -221,47 +227,47 @@ function search_exclude_form_search_admin_settings_alter(&$form, &$form_state, $
      * 
      * @link https://drupal.org/node/1296362
      */
-    if(module_exists('search_config')){
+    if (module_exists('search_config')) {
         
-        form_load_include($form_state, 'inc', 'search_config','search_config.admin');
+        form_load_include($form_state, 'inc', 'search_config', 'search_config.admin');
     }
-    if(array_search('search_exclude', $activeModules,true) !== false){
-        $excludeTypes = variable_get('search_exclude_content_types','');
+    if (array_search('search_exclude', $active_modules, TRUE) !== FALSE) {
+        $exclude_types = variable_get('search_exclude_content_types', '');
         
         $form['status']['exclude_types_group'] = array(
-            '#type'=>'fieldset',
-            '#title'=>t('Content Types to exclude'),
-            '#collapsible'=>true,
-            '#collapsed'=>empty($excludeTypes),
-            '#description'=>t('Select the content types not will be indexed on <b>cron</b>, <b>drush</b> or manually clicking on: <b>"@btn"</b> button below',array('@btn'=>t('Run Indexing')))
+            '#type' => 'fieldset',
+            '#title' => t('Content Types to exclude'),
+            '#collapsible' => TRUE,
+            '#collapsed' => empty($exclude_types),
+            '#description' => t('Select the content types not will be indexed on <b>cron</b>, <b>drush</b> or manually clicking on: <b>"@btn"</b> button below', array('@btn' => t('Run Indexing')))
         ); 
         
-        $contentTypes = node_type_get_names();
-        if(!empty($contentTypes)){
+        $content_types = node_type_get_names();
+        if (!empty($content_types)) {
             
             $selected = array();
             
-            foreach ($contentTypes as $type => $typeName) {
+            foreach ($content_types as $type => $typename) {
 
-                $options[$type] = $typeName;
+                $options[$type] = $typename;
                 
-                if(strpos($excludeTypes, $type) !== false){
+                if (strpos($exclude_types, $type) !== FALSE) {
                     $selected[] = $type;
                     
                 }
             }
             
-            $moduleSelect = 'jquery_ui_multiselect_widget';
-            $msg = t('<b>Obs:</b> For better "look and feel" for this component, enable the module <a href="@moduleUrl">@module</a>',array('@module'=>$moduleSelect,'@moduleUrl'=>'https://drupal.org/project/jquery_ui_multiselect_widget'));
+            $module_select = 'jquery_ui_multiselect_widget';
+            $msg = t('<b>Obs:</b> For better "look and feel" for this component, enable the module <a href="@moduleUrl">@module</a>', array('@module' => $module_select, '@moduleUrl' => 'https://drupal.org/project/jquery_ui_multiselect_widget'));
             
-            $selectDesc = !module_exists('jquery_ui_multiselect_widget')?$msg:'';
+            $selectdesc = !module_exists('jquery_ui_multiselect_widget')?$msg:'';
             $form['status']['exclude_types_group']['exclude_types'] = array(
-                '#type'=>'select',
-                '#title'=>t('Select the Content(s) Type(s)'),
-                '#options'=>$options,
-                '#default_value'=>$selected,
-                '#multiple'=>true,
-                '#description'=>$selectDesc
+                '#type' => 'select',
+                '#title' => t('Select the Content(s) Type(s)'),
+                '#options' => $options,
+                '#default_value' => $selected,
+                '#multiple' => TRUE,
+                '#description' => $selectdesc
             );
             
         }
@@ -270,26 +276,24 @@ function search_exclude_form_search_admin_settings_alter(&$form, &$form_state, $
         $form['status']['status']['#suffix']= '</div>';
           
         $form['status']['exclude_types_group']['update_status'] = array(  
-            '#type'=>'button',
-            '#value'=>t('Update status'),
-            '#executes_submit_callback' => false,
+            '#type' => 'button',
+            '#value' => t('Update status'),
+            '#executes_submit_callback' => FALSE,
             '#limit_validation_errors' => array(),
-            '#submit'=>array(),
-            '#ajax'=>array(
-                'callback'=>'_search_exclude_ajax_update_status',
-                'wrapper'=>'search_status_text',
-                'effect'=>'fade'
+            '#submit' => array(),
+            '#ajax' => array(
+                'callback' => '_search_exclude_ajax_update_status',
+                'wrapper' => 'search_status_text',
+                'effect' => 'fade'
             )
         );
         
         $form['status']['exclude_types_group']['run_indexing'] = array(
-            '#type'=>'submit',
-            '#value'=>t('Run Indexing'),
-            '#submit'=>array('search_exclude_index_submit')
+            '#type' => 'submit',
+            '#value' => t('Run Indexing'),
+            '#submit' => array('search_exclude_index_submit')
         );
         
         $form['#submit'][] = 'search_exclude_submit';
-        
-        
     }
 }

@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * Hook installs.
+ * Remove module variables when
+ * uninstall 
+ */
 
 /**
 * Implements hook_uninstall();

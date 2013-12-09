@@ -1,16 +1,23 @@
 <?php
 /**
+ * @file
+ * Callbacks for new form buttons
+ * to run search indexing and
+ * new status message
+ */
+
+/**
  * Form submission handler for search_admin_settings().
  * 
  * Save content types on 'search_exclude_content_types'
  * admin when 'Save settings' button is pressed
  * 
  */
-function search_exclude_submit($form,$form_state){
+function search_exclude_submit($form, $form_state) {
     
-    $excludeTypes = implode(',',$form_state['values']['exclude_types']);
+    $exclude_types = implode(',', $form_state['values']['exclude_types']);
     
-    variable_set('search_exclude_content_types', $excludeTypes);
+    variable_set('search_exclude_content_types', $exclude_types);
     
 }
 
@@ -26,15 +33,15 @@ function search_exclude_submit($form,$form_state){
  * @return string Status message with new 'percentage' and 'remaining' index without
  *                content types defined in 'exclude_types' multiselect field
  */
-function _search_exclude_ajax_update_status($form,$form_state){
+function _search_exclude_ajax_update_status($form, $form_state) {
     
     $remaining = 0;
     $total = 0;
     
-    $searchExcludes = implode(',',$form_state['values']['exclude_types']);
-    $status = module_invoke('search_exclude','search_status',$searchExcludes);
+    $search_excludes = implode(',', $form_state['values']['exclude_types']);
+    $status = module_invoke('search_exclude', 'search_status', $search_excludes);
     
-    if($status){
+    if ($status) {
         $remaining += $status['remaining'];
         $total += $status['total'];
     }
@@ -60,20 +67,20 @@ function _search_exclude_ajax_update_status($form,$form_state){
  * @see _search_exclude_index_finished()
  */
 
-function search_exclude_index_submit(&$form,$form_state){
+function search_exclude_index_submit(&$form, $form_state) {
     
-    $excludeTypes = implode(',',$form_state['values']['exclude_types']);
-    variable_set('search_exclude_content_types', $excludeTypes);
+    $exclude_types = implode(',', $form_state['values']['exclude_types']);
+    variable_set('search_exclude_content_types', $exclude_types);
     
     $batch = array(
-        'title'=>t('Regenerating search index'),
-        'progress_message'=>t('Processed @current out of @total'),
-        'error_message'=>t('Error to index nodes for search'),
-        'operations'=>array(
-            array('_search_exclude_index_batch',array('search_exclude'))
+        'title' => t('Regenerating search index'),
+        'progress_message' => t('Processed @current out of @total'),
+        'error_message' => t('Error to index nodes for search'),
+        'operations' => array(
+            array('_search_exclude_index_batch', array('search_exclude'))
         ),
-        'finished'=>'_search_exclude_index_finished',
-        'file'=>drupal_get_path('module','search_exclude').'/search_exclude.batch.inc'
+        'finished' => '_search_exclude_index_finished',
+        'file' => drupal_get_path('module', 'search_exclude') . '/search_exclude.batch.inc'
     );
 
     batch_set($batch);
